@@ -3,11 +3,12 @@ import PyPlot
 include("./Common.jl");
 
 function evaluate_flow(uv::Array{Float64, 3}, uv_gt::Array{Float64,3})
+  uv = map(x->(x<1e9)?x:0.0, uv)
+  uv_gt = map(x->(x<1e9)?x:0.0, uv_gt)
   u_diff = uv[:,:,1]-uv_gt[:,:,1]
   v_diff = uv[:,:,2]-uv_gt[:,:,2]
   ep = sqrt(u_diff.^2 + v_diff.^2)
-  ep_filt = [x for x in ep if x < 1000000000]
-  AEPE = sum(ep_filt)/length(ep)
+  AEPE = sum(ep)/length(ep)
 
   return AEPE::Float64
 end
@@ -17,7 +18,7 @@ function warp_image(im2::Array{Float64, 2}, uv0::Array{Float64, 3})
   im_warp = zeros(Float64, size(im2))
   for j in 1:size(im2,2)
     for i in 1:size(im2,1)
-      if uv0[i,j,2] < 1000000000 || uv0[i,j,1] < 1000000000
+      if uv0[i,j,2] < 1e9 || uv0[i,j,1] < 1e9
         im_warp[i,j] = itp[i+uv0[i,j,2],j+uv0[i,j,1]]
       else
         im_warp[i,j] = im2[i,j]
