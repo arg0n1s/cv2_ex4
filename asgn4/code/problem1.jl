@@ -35,9 +35,9 @@ function load_images_and_flow()
 end
 
 function compute_grad_images(im1::Array{Float64, 2}, im2::Array{Float64, 2}, uv0::Array{Float64,3})
-  It = im2-im1
-  Ix, Iy = imgradients(im2, )
-
+  im2_w = warp_image(im2, flow10)
+  It = im2_w - im1
+  Iy, Ix = imgradients(im2_w, Kernel.prewitt, "replicate")
   return Ix::Array{Float64, 2}, Iy::Array{Float64, 2}, It::Array{Float64, 2}
 end
 
@@ -64,7 +64,7 @@ end
 
 function problem1()
   im1, im2, flow10 = load_images_and_flow()
-  im2_w = warp_image(im1, flow10)
+  im2_w = warp_image(im2, flow10)
   figure()
   subplot(1,3,1)
   title("I1")
