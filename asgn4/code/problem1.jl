@@ -13,7 +13,7 @@ function evaluate_flow(uv::Array{Float64, 3}, uv_gt::Array{Float64,3})
 end
 
 function warp_image(im2::Array{Float64, 2}, uv0::Array{Float64, 3})
-  itp = interpolate(im2, BSpline(Linear(Line())), OnGrid())
+  itp = interpolate(im2, BSpline(Linear()), OnGrid())
   im_warp = zeros(Float64, size(im2))
   for j in 1:size(im2,2)
     for i in 1:size(im2,1)
@@ -63,5 +63,16 @@ end
 
 
 function problem1()
-  im1, im3, flow10 = load_images_and_flow()
+  im1, im2, flow10 = load_images_and_flow()
+  im2_w = warp_image(im1, flow10)
+  figure()
+  subplot(1,3,1)
+  title("I1")
+  PyPlot.imshow(im1, "gray")
+  subplot(1,3,2)
+  title("I2_w")
+  PyPlot.imshow(im2_w, "gray")
+  subplot(1,3,3)
+  title("Difference between I2_w and I1")
+  PyPlot.imshow(im2_w - im1, "gray")
 end
