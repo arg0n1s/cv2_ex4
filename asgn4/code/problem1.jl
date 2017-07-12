@@ -284,21 +284,23 @@ function problem1()
   lambda = 0.009
   #lambda = find_lambda(im1, im2, uv0, flow10, 1.0)
   #print("Best lambda was: $lambda\n")
-  for i in 1:5
+  uv = zeros(Float64, size(flow10))
+  for i in 1:2
     if i > 1
-      uv = flow_HS(im1, im2, uv0, lambda, 1.0)
-      uv0 += uv
+      uv0 = flow_HS(im1, im2, uv0, lambda, 1.0)
+      uv += uv0
     else
       uv0 = flow_HS(im1, im2, uv0, lambda, 1.0)
       uv = uv0
     end
-    im2 = warp_image(im2, uv)
+    im2 = warp_image(im2, uv0)
+    uv0 = zeros(Float64, size(flow10))
     #figure()
     #PyPlot.imshow(copy(im2), "gray")
     #lambda = find_lambda(im1, im2, uv0, flow10, 1.0)
     #display(lambda)
   end
-  uv_hs = uv0
+  uv_hs = uv
   aepe = evaluate_flow(uv_hs, flow10)
   print("Average end point error was $aepe\n")
   figure()
